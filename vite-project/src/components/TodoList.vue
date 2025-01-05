@@ -6,10 +6,12 @@
         <input type="text" v-model="title" @keydown.enter="addTodo" />
         <button v-if="active < all" @click="clear">清理</button>
         <ul v-if="todos.length">
-            <li v-for="todo in todos">
-                <input type="checkbox" v-model="todo.done" />
-                <span :class="{ done: todo.done }"> {{ todo.title }}</span>
-            </li>
+            <transition-group name="flip-list" tag="ul">
+                <li v-for="todo in todos" :key="todo.title">
+                    <input type="checkbox" v-model="todo.done" />
+                    <span :class="{ done: todo.done }"> {{ todo.title }}</span>
+                </li>
+            </transition-group>
         </ul>
         <div v-else>暂无数据</div>
         <div>
@@ -17,6 +19,11 @@
             <span> {{ active }} / {{ all }} </span>
         </div>
     </div>
+    <transition name="modal">
+        <div class="info-wrapper" v-if="showModal">
+            <div class="info"> 哥，你啥也没输入！ </div>
+        </div>
+    </transition>
 </template>
 
 <script setup>
@@ -32,16 +39,23 @@ function add() {
     color.value = Math.random() > 0.5 ? "blue" : "red"
 }
 
-let { title, todos, addTodo, clear, active, all, allDone } = useTodos();
+let { title, todos, addTodo, clear, active, all, allDone, showModal } = useTodos();
 function useTodos() {
+    let showModal = ref(false)
     let title = ref("");
     let todos = ref([{ title: "学习Vue", done: false }]);
     function addTodo() {
+        if (!title.value) {
+            showModal.value = true
+            setTimeout(() => {
+                showModal.value = false
+            }, 1500)
+            return
+        }
         todos.value.push({
             title: title.value,
             done: false,
-        });
-        title.value = "";
+        }); title.value = "";
     }
     function clear() {
         todos.value = todos.value.filter((v) => !v.done);
@@ -58,7 +72,7 @@ function useTodos() {
             });
         },
     });
-    return { title, todos, addTodo, clear, active, all, allDone };
+    return { title, todos, addTodo, clear, active, all, allDone, showModal };
 }
 </script>
 
@@ -66,5 +80,57 @@ function useTodos() {
 <style scoped>
 h1 {
     color: v-bind(color);
+}
+
+
+
+.info-wrapper {
+    position: fixed;
+    top: 20px;
+    width: 200px;
+}
+
+.info {
+    padding: 20px;
+    color: white;
+    background: #d88986;
+}
+
+.flip-list-move {
+    transition: transform 0.8s ease;
+}
+
+.flip-list-enter-active,
+.flip-list-leave-active {
+    transition: all 1s ease;
+}
+
+.flip-list-enter-from,
+.flip-list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+</style>
+
+
+
+
+<style>
+.modal-enter-from {
+    opacity: 0;
+    transform: translateY(-60px);
+}
+
+.modal-enter-active {
+    transition: all 0.3s ease;
+}
+
+.modal-leave-to {
+    opacity: 0;
+    transform: translateY(-60px);
+}
+
+.modal-leave-active {
+    transition: all 0.3s ease;
 }
 </style>
