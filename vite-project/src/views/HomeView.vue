@@ -1,6 +1,6 @@
 <script setup>
 import TheWelcome from '../components/TheWelcome.vue'
-import TodoList from '../components/Todolist.vue'
+import TodoList from '../components/TodoList.vue'
 
 import { ref } from 'vue'
 import Rate from '../components/Rate.vue'
