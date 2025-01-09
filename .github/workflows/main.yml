@@ -12,13 +12,13 @@ jobs:
     steps:
     # 1. 检出代码
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.2.2
 
     # 2. 安装 Node.js
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4.1.0
       with:
-        node-version: 16 # 指定需要的 Node.js 版本
+        node-version: 20 # 指定需要的 Node.js 版本
 
     # 3. 安装依赖
     - name: Install dependencies
@@ -46,4 +46,4 @@ jobs:
           rm -rf *
           exit
         EOF
-        scp -r my-vue-study/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-app
+        scp -r my-vue-app/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-app
