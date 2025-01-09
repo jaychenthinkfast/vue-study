@@ -23,13 +23,13 @@ jobs:
     # 3. 安装依赖
     - name: Install dependencies
       run: |
-        cd my-vue-study
+        cd my-vue-app
         npm install
 
     # 4. 构建项目
     - name: Build the project
       run: |
-        cd my-vue-study
+        cd my-vue-app
         npm run build
 
     # 5. SSH 到目标服务器并执行部署
@@ -42,8 +42,8 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
-          cd /wwwroot/my-vue-study
+          cd /wwwroot/my-vue-app
           rm -rf *
           exit
         EOF
-        scp -r my-vue-study/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-study
+        scp -r my-vue-study/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-app
