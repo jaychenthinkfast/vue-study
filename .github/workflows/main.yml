@@ -1,0 +1,49 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 检出代码
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    # 2. 安装 Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16 # 指定需要的 Node.js 版本
+
+    # 3. 安装依赖
+    - name: Install dependencies
+      run: |
+        cd my-vue-study
+        npm install
+
+    # 4. 构建项目
+    - name: Build the project
+      run: |
+        cd my-vue-study
+        npm run build
+
+    # 5. SSH 到目标服务器并执行部署
+    - name: Deploy to Server
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
+          cd /wwwroot/my-vue-study
+          rm -rf *
+          exit
+        EOF
+        scp -r my-vue-study/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-study
