@@ -41,13 +41,9 @@ jobs:
         chmod 700 ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-
-        # 上传新文件到临时目录
-        scp -r my-vue-app/dist/* $REMOTE_USER@$REMOTE_HOST:/tmp/new-deploy
-
-        # 替换远程目录
         ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
-          mv /wwwroot/my-vue-app /wwwroot/my-vue-app-backup-$(date +%Y%m%d%H%M%S)
-          mv /tmp/new-deploy /wwwroot/my-vue-app
+          cd /wwwroot/my-vue-app
+          rm -rf *
           exit
         EOF
+        scp -r my-vue-app/dist/* $REMOTE_USER@$REMOTE_HOST:/wwwroot/my-vue-app
